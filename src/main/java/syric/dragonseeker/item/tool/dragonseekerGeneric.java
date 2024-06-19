@@ -14,6 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import syric.dragonseeker.DragonseekerConfig;
 
 import java.util.List;
@@ -40,8 +42,8 @@ public class dragonseekerGeneric extends Item {
     //Other stats
     private boolean detectsCorpses;
     private boolean detectsTame;
-//    private int durability;
-//    private Rarity rarity;
+    private int durability;
+    private Rarity rarity;
     private final Item repairItem;
     private final int seekerType;
     private boolean isDefault;
@@ -74,8 +76,8 @@ public class dragonseekerGeneric extends Item {
         pingSound = pingSoundIn;
         detectsCorpses = detectsCorpsesIn;
         detectsTame = detectsTameIn;
-//        durability = durabilityIn;
-//        rarity = rarityIn;
+        durability = durabilityIn;
+        rarity = rarityIn;
         repairItem = repairItemIn;
         seekerType = seekerTypeIn;
         isDefault = true;
@@ -91,7 +93,7 @@ public class dragonseekerGeneric extends Item {
 
     //Using the Item
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
 
 //        String s1 = "Checking for entities";
@@ -105,47 +107,15 @@ public class dragonseekerGeneric extends Item {
 //        }
 
         if (!world.isClientSide) {
-
-//            String s = "Before update, item OpDist is: " + opDist;
-//            player.displayClientMessage(Component.literal(s), false);
-
             if (isDefault) {
-//                String a = "Item stats default, updating";
-//                player.displayClientMessage(Component.literal(a), false);
                 importConfig();
                 isDefault = false;
-            } else {
-//                String b = "Item stats not default, not updating";
-//                player.displayClientMessage(Component.literal(b), false);
             }
-
-//            s = "After update, item OpDist is: " + opDist;
-//            player.displayClientMessage(Component.literal(s), false);
-
             itemstack.hurtAndBreak(1, player, (entity) -> player.broadcastBreakEvent(player.getUsedItemHand()));
 
             double distance = getDistance(world, player);
-            double chance = getPingChance(distance);
-            float vol = (float) getPingVolume(distance);
 
-//            printDistance(distance, world, player);
-
-            RandomSource random = world.random;
-
-            double rand = random.nextDouble();
-            if (rand <= chance) {
-                //Positive result
-                world.playSound(null, player.getX(), player.getY(), player.getZ(), pingSound, SoundSource.MASTER, vol, maxPitch);
-//                String s = "PING";
-//                ITextComponent text = new StringTextComponent(s);
-//                player.sendMessage(text, player.getUUID());
-            } else {
-                //Negative result
-                world.playSound(null, player.getX(), player.getY(), player.getZ(), negSound, SoundSource.MASTER, minVol, minPitch);
-//                String s = "PONG";
-//                ITextComponent text = new StringTextComponent(s);
-//                player.sendMessage(text, player.getUUID());
-            }
+            //printDistance(distance, world, player);
 
             return InteractionResultHolder.sidedSuccess(itemstack, world.isClientSide());
         }
@@ -155,12 +125,36 @@ public class dragonseekerGeneric extends Item {
 
     //methods
     private double getDistance(Level world, Player player) {
+        EntityDragonBase closest = switch (seekerType){
+            case 1 -> getEntityDragonBase(100,50,world, player);
+            case 2 -> getEntityDragonBase(200,100,world,player);
+            case 3 -> getEntityDragonBase(300,150,world,player);
+            case 4 -> getEntityDragonBase(400,200,world,player);
+            default -> null;
+        };
+        float min = closest!=null?closest.distanceTo(player):-1;
+        display(player, closest, min);
+        return min;
+    }
+
+    private void display(Player player, EntityDragonBase closest, float min) {
+        String s = "";
+        if (closest != null) {
+            s = Math.round(min) + ", x=" + (int) closest.getX() + ", y="+ (int) closest.getY() + ", z=" + (int) closest.getZ();
+        } else {
+            s = "No dragon found";
+        }
+        player.displayClientMessage(new TextComponent(s), false);
+    }
+
+    @Nullable
+    private EntityDragonBase getEntityDragonBase(int delta_xz,int delta_y,Level world, Player player) {
         double x = player.getX();
         double y = player.getY();
         double z = player.getZ();
-        AABB box = new AABB(x-300,-64,z-300,x+300,y+100,z+300);
-//        AABB box = new AABB(x - 10, y - 10, z - 10, x + 10, y + 10, z + 10);
-//        List<LivingEntity> listOfTargets = world.getNearbyEntities(ShulkerEntity.class,pred,player,box);
+        float min = 0;
+        AABB box = new AABB(x-delta_xz,y-delta_y,z-delta_xz,
+                x+delta_xz,y+delta_y,z+delta_xz);
         List<EntityDragonBase> listOfTargets = world.getEntitiesOfClass(EntityDragonBase.class, box);
 //        String s = "Identified " + listOfTargets.size() + " dragons.";
 //        player.displayClientMessage(Component.literal(s), false);
@@ -170,7 +164,6 @@ public class dragonseekerGeneric extends Item {
 //        player.displayClientMessage(Component.literal(s), false);
 
 
-        float min = 0;
         EntityDragonBase closest = null;
         for (EntityDragonBase target : listOfTargets) {
             if ((detectsCorpses || !target.isModelDead()) && (detectsTame || !target.isTame())) {
@@ -192,37 +185,9 @@ public class dragonseekerGeneric extends Item {
 //                player.displayClientMessage(Component.literal(s), false);
             }
         }
-        if (seekerType == 4) {
-            String s = closest != null ? Math.round(min) + ", x=" + (int) closest.getX() + ", y=" + (int) closest.getY() + ", z=" + (int) closest.getZ() : "No dragon found";
-            player.displayClientMessage(Component.literal(s), false);
-        }
-
-        return min;
+        return closest;
     }
 
-    private double getPingChance(double distance) {
-        double chance;
-        if (distance < opDist && distance != 0) {
-            chance = maxPing;
-        } else if ((distance > maxDist) || (distance == 0)) {
-            chance = minPing;
-        } else {
-            chance = minPing + ((maxDist-distance)/(maxDist-opDist))*(maxPing-minPing);
-        }
-        return chance;
-    }
-
-    private double getPingVolume(double distance) {
-        double vol;
-        if (distance < minSig && distance != 0) {
-            vol = maxVol;
-        } else if ((distance > maxDist) || (distance == 0)) {
-            vol = minVol;
-        } else {
-            vol = minVol + Math.pow(((maxDist-distance)/(maxDist-minSig)),pow)*(maxVol-minVol);
-        }
-        return vol;
-    }
 
     private void printDistance(double distance, Level world, Player player) {
         if (!world.isClientSide) {

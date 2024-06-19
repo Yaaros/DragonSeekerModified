@@ -1,7 +1,7 @@
 {
   "type": "minecraft:smithing_transform",
   "addition": {
-    "item": "minecraft:nether_star"
+    "item": "minecraft:diamond"
   },
   "base": {
     "item": "dragonseeker:dragonseeker"

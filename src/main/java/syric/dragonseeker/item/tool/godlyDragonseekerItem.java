@@ -29,9 +29,9 @@ public class godlyDragonseekerItem extends dragonseekerGeneric {
 //    private static final boolean detectsCorpses = DragonseekerConfig.COMMON.mythic_detectsCorpses.get();
 //    private static final boolean detectsTame = DragonseekerConfig.COMMON.mythic_detectsTame.get();
 //    private static final int durability = DragonseekerConfig.COMMON.mythic_durability.get();
-    private static final int durability = -1;
+    private static final int durability = 512;
     private static final Rarity rarity = Rarity.EPIC;
-    private static final Item repairItem = Items.NETHERITE_INGOT;
+    private static final Item repairItem = Items.NETHER_STAR;
     private static final int seekerType = 4;
 
     //Constructor

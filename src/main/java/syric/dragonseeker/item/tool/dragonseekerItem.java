@@ -29,9 +29,9 @@ public class dragonseekerItem extends dragonseekerGeneric {
 //    private static final boolean detectsCorpses = DragonseekerConfig.COMMON.basic_detectsCorpses.get();
 //    private static final boolean detectsTame = DragonseekerConfig.COMMON.basic_detectsTame.get();
 //    private static int durability = DragonseekerConfig.COMMON.basic_durability.get();
-    private static final int durability = 128;
+    private static final int durability = 24;
     private static final Rarity rarity = Rarity.UNCOMMON;
-    private static final Item repairItem = Items.NETHERITE_INGOT;
+    private static final Item repairItem = Items.STICK;
     private static final int seekerType = 1;
 
     //Constructor

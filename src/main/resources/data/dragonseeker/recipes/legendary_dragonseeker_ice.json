@@ -4,17 +4,21 @@
   [
     "a",
     "x",
-    "x"
+    "y"
   ],
   "key":
   {
     "x":
     {
-      "item": "iceandfire:dragonsteel_ice_ingot"
+      "item": "iceandfire:ice_dragon_blood"
     },
     "a":
     {
       "tag": "iceandfire:dragon_skulls"
+    },
+    "y":
+    {
+      "item": "minecraft:blaze_rod"
     }
   },
   "result":
