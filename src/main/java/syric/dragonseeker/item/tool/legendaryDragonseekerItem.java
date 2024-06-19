@@ -5,6 +5,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import syric.dragonseeker.DragonseekerConfig;
 
@@ -31,9 +32,9 @@ public class legendaryDragonseekerItem extends dragonseekerGeneric {
     private static final boolean detectsCorpses = DragonseekerConfig.COMMON.legendary_detectsCorpses.get();
     private static final boolean detectsTame = DragonseekerConfig.COMMON.legendary_detectsTame.get();
 //    private static final int durability = DragonseekerConfig.COMMON.legendary_durability.get();
-    private static final int durability = 512;
+    private static final int durability = 200;
     private static final Rarity rarity = Rarity.RARE;
-    private static final Item repairItem = IafItemRegistry.DRAGONSTEEL_FIRE_INGOT.get();
+    private static final Item repairItem = Items.BLAZE_POWDER;
     private static final int seekerType = 3;
 
     //Constructor

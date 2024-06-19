@@ -4,9 +4,9 @@
     "item": "dragonseeker:dragonseeker"
   },
   "addition": {
-    "item": "minecraft:diamond"
+    "item": "minecraft:nether_star"
   },
   "result": {
-    "item": "dragonseeker:epic_dragonseeker"
+    "item": "dragonseeker:godly_dragonseeker"
   }
 }
